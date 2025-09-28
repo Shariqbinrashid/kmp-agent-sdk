@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -29,7 +30,25 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            // Ktor for HTTP and SSE
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.auth)
+            
+            // Serialization
+            implementation(libs.kotlinx.serialization.json)
+            
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
+            
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+            
+            // UUID
+            implementation(libs.uuid)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
