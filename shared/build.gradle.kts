@@ -60,7 +60,7 @@ android {
     namespace = "com.shariqbinrashid.kmp_agent_sdk"
     compileSdk = 35
     defaultConfig {
-        minSdk = 24
+        minSdk = 23
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
