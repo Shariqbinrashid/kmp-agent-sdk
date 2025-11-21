@@ -3,5 +3,5 @@ jdk:
 before_install:
   - ./gradlew --version
 install:
-  - ./gradlew :shared:clean :shared:build :shared:publishToMavenLocal -x test
+  - ./gradlew :shared:clean :shared:publishToMavenLocal -x test
 
