@@ -2,6 +2,6 @@ jdk:
   - openjdk21
 before_install:
   - ./gradlew --version
-build:
-  - ./gradlew :shared:clean :shared:build -x test
+install:
+  - ./gradlew :shared:clean :shared:build :shared:publishToMavenLocal -x test
 
