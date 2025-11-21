@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-group = "com.shariqbinrashid.kmp_agent_sdk"
+group = "com.shariqbinrashid"
 version = "1.0.0"
 
 kotlin {
@@ -56,6 +56,11 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+    }
+    
+    // Configure publications for all targets
+    androidTarget {
+        publishLibraryVariants("release")
     }
 }
 

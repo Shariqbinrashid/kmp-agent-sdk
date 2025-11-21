@@ -14,14 +14,52 @@ A Kotlin Multiplatform SDK for integrating AI agents into mobile applications wi
 
 ## Installation
 
-Add the dependency to your `build.gradle.kts`:
+The SDK is published via **JitPack** - automatically built from GitHub releases. No approval needed, works immediately!
+
+### Gradle (Kotlin DSL)
+
+Add JitPack repository and the dependency to your `build.gradle.kts`:
 
 ```kotlin
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
 dependencies {
-    implementation("com.shariqbinrashid:kmp-agent-sdk:1.0.0")
+    implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0")
 }
 ```
 
+### Gradle (Groovy)
+
+Add JitPack repository and the dependency to your `build.gradle`:
+
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0'
+}
+```
+
+### Using a Specific Version
+
+You can use:
+- **Release tags**: `1.0.0`, `1.0.1`, etc. (recommended)
+- **Commit hash**: `abc123def` (short hash)
+- **Branch**: `master-SNAPSHOT` (for latest from branch)
+
+```kotlin
+// Use a specific release (recommended)
+implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0")
+
+// Use latest from master branch
+implementation("com.github.Shariqbinrashid:kmp-agent-sdk:master-SNAPSHOT")
+```
+
+**Note:** The SDK supports Android, iOS, and all Kotlin Multiplatform targets. JitPack automatically builds and publishes new versions when you create GitHub release tags.
 ## Quick Start
 
 ### 1. Initialize the SDK
@@ -401,6 +439,38 @@ MIT License - see [LICENSE](LICENSE) file for details.
 4. Push to the branch
 5. Create a Pull Request
 
+## Publishing
+
+The SDK is integrated with **JitPack** - it automatically builds and publishes from GitHub releases. No manual publishing needed!
+
+### How It Works
+
+1. **Push code to GitHub** (already done)
+2. **Create a release tag:**
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+3. **JitPack automatically:**
+   - Detects the new tag
+   - Builds your project
+   - Publishes to JitPack Maven repository
+   - Makes it available immediately (takes 2-5 minutes)
+
+### Check Build Status
+
+Visit: https://jitpack.io/#Shariqbinrashid/kmp-agent-sdk
+
+You can see:
+- Build logs for each version
+- Build status (success/failure)
+- Available versions
+- Download statistics
+
 ## Support
 
-For questions and support, please open an issue on GitHub or contact [your-email@example.com].
+For questions and support, please open an issue on [GitHub](https://github.com/Shariqbinrashid/kmp-agent-sdk/issues).
+
+## About
+
+This SDK was inspired by the need for a Kotlin Multiplatform solution for integrating AI agents into mobile applications. 
