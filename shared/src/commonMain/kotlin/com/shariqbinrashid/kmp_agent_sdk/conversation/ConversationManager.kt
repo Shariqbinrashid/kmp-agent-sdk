@@ -342,19 +342,75 @@ class ConversationManager(
                                     timestamp = Clock.System.now()
                                 )
                                 
-                                updateState { state ->
-                                    state.copy(
-                                        messages = state.messages + toolProposal,
-                                        currentState = AgentState.ProposedAction(
-                                            toolName = event.tool,
-                                            args = event.args,
-                                            uiHint = event.uiHint,
-                                            preview = event.preview,
-                                            proposalId = event.id
-                                        ),
-                                        conversationId = state.conversationId, // Keep existing conversation ID
-                                        updatedAt = Clock.System.now()
+                                // Check if tool has AUTO execution mode and execute automatically
+                                val toolSpec = toolRegistry.getTool(event.tool)
+                                val shouldAutoExecute = toolSpec?.executionMode == ToolExecutionMode.AUTO
+                                
+                                if (shouldAutoExecute) {
+                                    // Auto-execute the tool
+                                    val context = ToolExecutionContext(
+                                        sessionId = _conversationState.value.sessionId,
+                                        conversationId = _conversationState.value.conversationId ?: "",
+                                        metadata = _conversationState.value.metadata
                                     )
+                                    
+                                    val toolResult = toolRegistry.executeTool(
+                                        toolName = event.tool,
+                                        args = event.args,
+                                        context = context
+                                    )
+                                    
+                                    toolResult.fold(
+                                        onSuccess = { result ->
+                                            val toolResultMessage = ToolResultMessage(
+                                                id = generateMessageId(),
+                                                toolName = event.tool,
+                                                result = result,
+                                                timestamp = Clock.System.now()
+                                            )
+                                            
+                                            updateState { state ->
+                                                state.copy(
+                                                    messages = state.messages + toolProposal + toolResultMessage,
+                                                    currentState = AgentState.ToolExecuted(
+                                                        toolName = event.tool,
+                                                        result = result
+                                                    ),
+                                                    conversationId = state.conversationId,
+                                                    updatedAt = Clock.System.now()
+                                                )
+                                            }
+                                        },
+                                        onFailure = { error ->
+                                            updateState { state ->
+                                                state.copy(
+                                                    messages = state.messages + toolProposal,
+                                                    currentState = AgentState.Error(
+                                                        kind = ErrorKind.TOOL_EXECUTION,
+                                                        message = "Tool execution failed: ${error.message}",
+                                                        retryable = true
+                                                    ),
+                                                    updatedAt = Clock.System.now()
+                                                )
+                                            }
+                                        }
+                                    )
+                                } else {
+                                    // Manual execution required
+                                    updateState { state ->
+                                        state.copy(
+                                            messages = state.messages + toolProposal,
+                                            currentState = AgentState.ProposedAction(
+                                                toolName = event.tool,
+                                                args = event.args,
+                                                uiHint = event.uiHint,
+                                                preview = event.preview,
+                                                proposalId = event.id
+                                            ),
+                                            conversationId = state.conversationId, // Keep existing conversation ID
+                                            updatedAt = Clock.System.now()
+                                        )
+                                    }
                                 }
                             }
                             

@@ -6,6 +6,9 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+group = "com.shariqbinrashid.kmp_agent_sdk"
+version = "1.0.0"
+
 kotlin {
     androidTarget {
         compilations.all {
@@ -31,24 +34,24 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Ktor for HTTP and SSE
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.cio)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.client.auth)
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.cio)
+            api(libs.ktor.client.content.negotiation)
+            api(libs.ktor.serialization.kotlinx.json)
+            api(libs.ktor.client.logging)
+            api(libs.ktor.client.auth)
             
             // Serialization
-            implementation(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.serialization.json)
             
             // Coroutines
-            implementation(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.coroutines.core)
             
             // DateTime
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
             
             // UUID
-            implementation(libs.uuid)
+            api(libs.uuid)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -10,7 +10,10 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
+import io.ktor.utils.io.readAvailable
+import io.ktor.utils.io.readUTF8Line
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
@@ -86,8 +89,8 @@ class RemoteAgent(
                     Result.failure(AgentException(ErrorKind.RATE_LIMIT, "Rate limit exceeded"))
                 }
                 else -> {
-                    val errorBody = response.bodyAsText()
-                    Result.failure(AgentException(ErrorKind.SERVER_ERROR, "Server error: $errorBody"))
+//                    val errorBody = response.bodyAsText()
+                    Result.failure(AgentException(ErrorKind.SERVER_ERROR, "Server error:"))
                 }
             }
         } catch (e: HttpRequestTimeoutException) {
@@ -182,36 +185,44 @@ class RemoteAgent(
  * Extension function to parse SSE events from a ByteReadChannel
  */
 private fun io.ktor.utils.io.ByteReadChannel.parseSSEEvents(): Flow<SSEEvent> = flow {
-    val buffer = StringBuilder()
     var currentEvent = mutableMapOf<String, String>()
+    val buffer = StringBuilder()
     
+    try {
         while (!isClosedForRead) {
-            val line = readUTF8Line(limit = 8192) ?: break
-        
-        when {
-            line.isEmpty() -> {
-                // Empty line indicates end of event
-                if (currentEvent.isNotEmpty()) {
-                    parseSSEEvent(currentEvent)?.let { emit(it) }
-                    currentEvent.clear()
+            val temp = ByteArray(1024)
+            val bytesRead = readAvailable(temp)
+            if (bytesRead <= 0) break
+            val text = temp.decodeToString(0, bytesRead)
+            buffer.append(text)
+            
+            var newlineIdx: Int
+            while (buffer.indexOf('\n').also { newlineIdx = it } != -1) {
+                val line = buffer.substring(0, newlineIdx).trimEnd('\r')
+                buffer.deleteRange(0, newlineIdx + 1)
+                
+                when {
+                    line.isEmpty() -> {
+                        if (currentEvent.isNotEmpty()) {
+                            parseSSEEvent(currentEvent)?.let { emit(it) }
+                            currentEvent.clear()
+                        }
+                    }
+                    line.startsWith("event:") -> {
+                        currentEvent["event"] = line.substring(6).trim()
+                    }
+                    line.startsWith("data:") -> {
+                        val data = line.substring(5).trim()
+                        currentEvent["data"] = (currentEvent["data"] ?: "") + data
+                    }
+                    line.startsWith("id:") -> {
+                        currentEvent["id"] = line.substring(3).trim()
+                    }
                 }
             }
-            line.startsWith("event:") -> {
-                currentEvent["event"] = line.substring(6).trim()
-            }
-            line.startsWith("data:") -> {
-                val data = line.substring(5).trim()
-                currentEvent["data"] = (currentEvent["data"] ?: "") + data
-            }
-            line.startsWith("id:") -> {
-                currentEvent["id"] = line.substring(3).trim()
-            }
         }
-    }
-    
-    // Handle final event if stream ends without empty line
-    if (currentEvent.isNotEmpty()) {
-        parseSSEEvent(currentEvent)?.let { emit(it) }
+    } catch (e: Exception) {
+        // Stream ended or error
     }
 }
 
