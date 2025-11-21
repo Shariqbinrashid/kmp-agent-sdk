@@ -26,7 +26,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0")
+    // Main KMP library (works for all platforms)
+    implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.4")
+    
+    // Or use Android-specific AAR (optional, for Android-only projects)
+    // implementation("com.github.Shariqbinrashid.kmp-agent-sdk:shared-android:1.0.4")
 }
 ```
 
@@ -40,7 +44,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0'
+    // Main KMP library (works for all platforms)
+    implementation 'com.github.Shariqbinrashid:kmp-agent-sdk:1.0.4'
+    
+    // Or use Android-specific AAR (optional, for Android-only projects)
+    // implementation 'com.github.Shariqbinrashid.kmp-agent-sdk:shared-android:1.0.4'
 }
 ```
 
@@ -53,13 +61,27 @@ You can use:
 
 ```kotlin
 // Use a specific release (recommended)
-implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.0")
+implementation("com.github.Shariqbinrashid:kmp-agent-sdk:1.0.4")
 
 // Use latest from master branch
 implementation("com.github.Shariqbinrashid:kmp-agent-sdk:master-SNAPSHOT")
 ```
 
+### Available Artifacts
+
+The SDK publishes two artifacts:
+
+1. **`kmp-agent-sdk`** (Recommended) - Main Kotlin Multiplatform library
+   - Works for all platforms (Android, iOS, JVM, etc.)
+   - Use this for KMP projects
+
+2. **`shared-android`** (Optional) - Android-specific AAR
+   - Android-only projects can use this for a smaller dependency
+   - Contains the same functionality as `kmp-agent-sdk`
+
 **Note:** The SDK supports Android, iOS, and all Kotlin Multiplatform targets. JitPack automatically builds and publishes new versions when you create GitHub release tags.
+
+**Latest Version:** `1.0.4` - See all versions at [JitPack](https://jitpack.io/#Shariqbinrashid/kmp-agent-sdk)
 ## Quick Start
 
 ### 1. Initialize the SDK
@@ -448,9 +470,11 @@ The SDK is integrated with **JitPack** - it automatically builds and publishes f
 1. **Push code to GitHub** (already done)
 2. **Create a release tag:**
    ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
+   git tag v1.0.5  # Use a new version number each time
+   git push origin v1.0.5
    ```
+   
+   **Important:** Use a new version number for each release. JitPack caches builds by tag name, so reusing the same tag won't trigger a new build.
 3. **JitPack automatically:**
    - Detects the new tag
    - Builds your project
