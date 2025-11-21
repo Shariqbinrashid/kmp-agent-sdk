@@ -423,7 +423,14 @@ class ConversationManager(
                                     )
                                     
                                     updateState { state ->
-                                        val updatedMessages = state.messages.dropLast(1) + finalMessage
+                                        // Only drop last message if it's a partial AssistantMessage
+                                        // Don't drop ToolResultMessage or other message types
+                                        val updatedMessages = if (state.messages.lastOrNull() is AssistantMessage && 
+                                                                 (state.messages.lastOrNull() as? AssistantMessage)?.partial == true) {
+                                            state.messages.dropLast(1) + finalMessage
+                                        } else {
+                                            state.messages + finalMessage
+                                        }
                                         state.copy(
                                             messages = updatedMessages,
                                             currentState = AgentState.AssistantFinal(event.text),
