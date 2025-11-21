@@ -85,8 +85,14 @@ android {
 // Publishing configuration for JitPack
 publishing {
     publications.withType<MavenPublication> {
-        // Set artifact ID
-        artifactId = "kmp-agent-sdk"
+        // Set artifact ID - use publication name to avoid conflicts
+        // This allows each target (android, ios, etc.) to have unique artifacts
+        val publicationName = this.name
+        artifactId = if (publicationName == "kotlinMultiplatform") {
+            "kmp-agent-sdk"
+        } else {
+            "kmp-agent-sdk-$publicationName"
+        }
         
         pom {
             name.set("KMP Agent SDK")
