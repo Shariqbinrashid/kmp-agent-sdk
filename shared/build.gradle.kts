@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
+    `maven-publish`
 }
 
 group = "com.shariqbinrashid"
@@ -73,5 +74,45 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+// Publishing configuration for JitPack
+publishing {
+    publications.withType<MavenPublication> {
+        // Set artifact ID
+        artifactId = "kmp-agent-sdk"
+        
+        pom {
+            name.set("KMP Agent SDK")
+            description.set("A Kotlin Multiplatform SDK for integrating AI agents into mobile applications")
+            url.set("https://github.com/Shariqbinrashid/kmp-agent-sdk")
+            
+            licenses {
+                license {
+                    name.set("MIT")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+            
+            developers {
+                developer {
+                    id.set("shariqbinrashid")
+                    name.set("Shariq Bin Rashid")
+                    email.set("shariqbinrashid@gmail.com")
+                }
+            }
+            
+            scm {
+                connection.set("scm:git:git://github.com/Shariqbinrashid/kmp-agent-sdk.git")
+                developerConnection.set("scm:git:ssh://github.com:Shariqbinrashid/kmp-agent-sdk.git")
+                url.set("https://github.com/Shariqbinrashid/kmp-agent-sdk/tree/master")
+            }
+        }
     }
 }
